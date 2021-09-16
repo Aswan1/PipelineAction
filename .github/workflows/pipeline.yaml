@@ -1,14 +1,32 @@
 ﻿name: Vår första workflow
-on: [push]
+
+on: 
+ push:
+   branches: [main]  
 jobs:
-  build:
-    name: Build job
+  build-and-push-api:
     runs-on: ubuntu-latest
-    
+    permissions:
+        contents: read
+        packages: write
+
+    env: 
+      working-directory: ./Source
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.0.x
-      - name: big koden
-        run: dotnet build 
+    - name: Checkout code
+      uses: actions/checkout@v2.3.4
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1.10.0
+      with:
+         registry: ghcr.io
+         username: ${ { github.actor } };
+         password: ${ { secrets.GITHUB_TOKEN } }
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2.7.0
+      with:
+        push: true
+        context: ${ {env.working-directory} }/PROJECT_DIR
+        tags: |
+          ghcr.io/Aswan1/PipelineAction/latest
+          ghcr.io/Aswan1/PipelineAction/:${{ github.run_number }}

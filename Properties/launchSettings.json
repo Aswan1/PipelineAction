@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PipelineAction": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
